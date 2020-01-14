@@ -77,13 +77,19 @@ class Search extends React.Component {
         super();
         this.onSubmit = this.onSubmit.bind(this);
         this.checkEnter = this.checkEnter.bind(this);
+        this.saveCoords = this.saveCoords.bind(this);
     }
 
     state = {
-        userInput: null
+        userInput: null,
+        lat: null,
+        long: null
     };
 
     onSubmit() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(this.saveCoords);
+        }
         let newInput = document.getElementById("searchInput").value;
         // if userInput is empty, error message
         if (newInput.length == 0) {
@@ -94,6 +100,13 @@ class Search extends React.Component {
         }
     }
 
+    saveCoords(position) {
+        this.setState({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude
+        });
+    }
+
     checkEnter(e) {
         if (e.key === "Enter") {
             this.onSubmit();
@@ -102,8 +115,19 @@ class Search extends React.Component {
 
     render() {
         let search = null;
-        if (this.state.userInput !== null && this.state.userInput.length > 0) {
-            search = <SearchResults query={this.state.userInput} />;
+        if (
+            this.state.userInput !== null &&
+            this.state.userInput.length > 0 &&
+            this.state.lat &&
+            this.state.lon
+        ) {
+            search = (
+                <SearchResults
+                    query={this.state.userInput}
+                    lat={this.state.lat}
+                    lon={this.state.lon}
+                />
+            );
         }
         return (
             <React.Fragment>
@@ -154,19 +178,25 @@ class SearchResults extends React.Component {
         super(props);
 
         this.getResultsServer = this.getResultsServer.bind(this);
-        this.getResultsServer(this.props.query);
+        this.getResultsServer(this.props.query, this.props.lat, this.props.lon);
     }
 
     state = {
         allResults: {}
     };
 
-    getResultsServer(query) {
+    getResultsServer(query, lat, lon) {
         console.log("Request sent");
         let BASE_URL =
             "https://4jb0iea9tb.execute-api.us-west-2.amazonaws.com/prod/search?";
         let FULL_URL =
-            BASE_URL + "query=" + query + "&lat=33.158092&lon=-117.350594";
+            BASE_URL +
+            "query=" +
+            query +
+            "&lat=" +
+            lat.toString() +
+            "&lon=" +
+            lon.toString();
         fetch(FULL_URL, {
             method: "GET",
             mode: "cors"
@@ -267,11 +297,6 @@ class ResultCard extends React.Component {
                             <b>Cuisine</b>
                             <br />
                             {restaurant.cuisines}
-                            <br />
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit. Phasellus nec iaculis mauris.
-                            <a>@bulmaio</a>. <a href="#">#css</a>
-                            <a href="#">#responsive</a>
                             <br />
                             <b>Address</b>
                             <br />
