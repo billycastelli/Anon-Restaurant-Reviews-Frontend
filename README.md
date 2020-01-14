@@ -1,3 +1,6 @@
+# Review-Site-React
+React based frontend for anonymous restaurant review web app. Connected to AWS lambda based API using the AWS API Gateway.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
@@ -66,4 +69,4 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `yarn build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
-# Review-Site-React
+
