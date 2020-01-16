@@ -212,7 +212,11 @@ class SearchResults extends React.Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.query !== this.props.query) {
-            this.getResultsServer(this.props.query);
+            this.getResultsServer(
+                this.props.query,
+                this.props.lat,
+                this.props.lon
+            );
         }
     }
 
@@ -241,7 +245,9 @@ class SearchResults extends React.Component {
         return (
             <section className="section">
                 <div className="container">
-                    <h1 className="title">Search results</h1>
+                    <h1 className="title">
+                        Search results: {this.props.query}{" "}
+                    </h1>
                     {rowsDisplay}
                 </div>
             </section>
@@ -269,6 +275,12 @@ class ResultCard extends React.Component {
     constructor(props) {
         super(props);
         // console.log(this.props.restaurant);
+        this.clickCard = this.clickCard.bind(this);
+    }
+
+    clickCard() {
+        let restaurant = this.props.restaurant.restaurant;
+        console.log("Clicked", restaurant.name, restaurant.id);
     }
 
     render() {
@@ -283,13 +295,26 @@ class ResultCard extends React.Component {
                 <div className="card">
                     <div className="card-image">
                         <figure className="image is-4by3">
-                            <img src={photo} alt="Restaurant image" />
+                            <a>
+                                <img
+                                    src={photo}
+                                    alt="Restaurant image"
+                                    onClick={this.clickCard}
+                                />
+                            </a>
                         </figure>
                     </div>
                     <div className="card-content">
                         <div className="media">
                             <div className="media-content">
-                                <p className="title is-4">{restaurant.name}</p>
+                                <a>
+                                    <p
+                                        className="title is-4"
+                                        onClick={this.clickCard}
+                                    >
+                                        {restaurant.name}
+                                    </p>
+                                </a>
                             </div>
                         </div>
 
