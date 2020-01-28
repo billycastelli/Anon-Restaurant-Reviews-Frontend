@@ -380,7 +380,7 @@ class Modal extends React.Component {
         super(props);
     }
     state = {
-        modal_state: "modal"
+        modal_state: "modal "
     };
 
     componentDidUpdate(prevProps, prevState) {
@@ -388,8 +388,10 @@ class Modal extends React.Component {
             if (this.props.active === true) {
                 console.log("Modal active");
                 this.setState({ modal_state: "modal is-active" });
+                document.getElementById("html").classList.add("is-clipped");
             } else {
                 this.setState({ modal_state: "modal" });
+                document.getElementById("html").classList.remove("is-clipped");
             }
         }
     }
@@ -397,11 +399,14 @@ class Modal extends React.Component {
     render() {
         let restaurant = this.props.data;
         return (
-            <div className={this.state.modal_state}>
+            <div
+                className={this.state.modal_state}
+                style={{ overflow: "hidden" }}
+            >
                 <div className="modal-background"></div>
                 <div className="modal-card">
                     <header className="modal-card-head">
-                        <p className="modal-card-title">{restaurant.name}</p>
+                        <p className="modal-card-title">{}</p>
                         <button
                             className="delete"
                             aria-label="close"
@@ -428,7 +433,6 @@ class App extends React.Component {
     render() {
         return (
             <div>
-                {/* <Modal /> */}
                 <NavBar />
                 <Search />
             </div>
