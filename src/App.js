@@ -228,16 +228,16 @@ class SearchResults extends React.Component {
     clickCard(data) {
         console.log("Open clicked...");
         console.log("DATA", data);
-        document.getElementById("html").classList.add("is-clipped");
         this.setState({ modalData: data });
         this.setState({ displayModal: true });
+        document.getElementById("html").classList.add("is-clipped");
         console.log(this.state.displayModal);
     }
 
     closeModal() {
         console.log("Close clicked...");
-        document.getElementById("html").classList.remove("is-clipped");
         this.setState({ displayModal: false });
+        document.getElementById("html").classList.remove("is-clipped");
     }
 
     render() {
@@ -406,7 +406,7 @@ class Modal extends React.Component {
                 <div className="modal-background"></div>
                 <div className="modal-card">
                     <header className="modal-card-head">
-                        <p className="modal-card-title">{}</p>
+                        <p className="modal-card-title">{restaurant.name}</p>
                         <button
                             className="delete"
                             aria-label="close"
