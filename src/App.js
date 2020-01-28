@@ -178,11 +178,16 @@ class SearchResults extends React.Component {
         super(props);
 
         this.getResultsServer = this.getResultsServer.bind(this);
+        this.clickCard = this.clickCard.bind(this);
+        this.closeModal = this.closeModal.bind(this);
+
         this.getResultsServer(this.props.query, this.props.lat, this.props.lon);
     }
 
     state = {
-        allResults: {}
+        allResults: {},
+        displayModal: false,
+        modalData: {}
     };
 
     getResultsServer(query, lat, lon) {
@@ -220,6 +225,19 @@ class SearchResults extends React.Component {
         }
     }
 
+    clickCard(data) {
+        console.log("Open clicked...");
+        console.log("DATA", data);
+        this.setState({ modalData: data });
+        this.setState({ displayModal: true });
+        console.log(this.state.displayModal);
+    }
+
+    closeModal() {
+        console.log("Close clicked...");
+        this.setState({ displayModal: false });
+    }
+
     render() {
         let rowsDisplay = null;
         if (this.state.allResults.restaurants) {
@@ -233,17 +251,34 @@ class SearchResults extends React.Component {
                 toDisplay.push(restaurants[i]);
                 // Clear display array after 4 filled
                 if (toDisplay.length % 4 == 0) {
-                    rows.push(<ResultRow key={i} toDisplay={toDisplay} />);
+                    rows.push(
+                        <ResultRow
+                            key={i}
+                            toDisplay={toDisplay}
+                            clickCard={this.clickCard}
+                        />
+                    );
                     toDisplay = [];
                 }
             }
             if (rows.length == 0) {
-                rows.push(<ResultRow key={0} toDisplay={restaurants} />);
+                rows.push(
+                    <ResultRow
+                        key={0}
+                        toDisplay={restaurants}
+                        clickCard={this.clickCard}
+                    />
+                );
             }
             rowsDisplay = <React.Fragment>{rows}</React.Fragment>;
         }
         return (
             <section className="section">
+                <Modal
+                    active={this.state.displayModal}
+                    closeModal={this.closeModal}
+                    data={this.state.modalData}
+                />
                 <div className="container">
                     <h1 className="title">
                         Search results: {this.props.query}{" "}
@@ -264,7 +299,11 @@ class ResultRow extends React.Component {
         let cards = [];
         for (let i = 0; i < this.props.toDisplay.length; i++) {
             cards.push(
-                <ResultCard key={i} restaurant={this.props.toDisplay[i]} />
+                <ResultCard
+                    key={i}
+                    restaurant={this.props.toDisplay[i]}
+                    clickCard={this.props.clickCard}
+                />
             );
         }
         return <div className="columns">{cards}</div>;
@@ -274,18 +313,12 @@ class ResultRow extends React.Component {
 class ResultCard extends React.Component {
     constructor(props) {
         super(props);
-        // console.log(this.props.restaurant);
-        this.clickCard = this.clickCard.bind(this);
-    }
-
-    clickCard() {
-        let restaurant = this.props.restaurant.restaurant;
-        console.log("Clicked", restaurant.name, restaurant.id);
+        // this.props.clickCard = this.props.clickCard.bind(this);
     }
 
     render() {
         let restaurant = this.props.restaurant.restaurant;
-        console.log(restaurant);
+        // console.log(restaurant);
         let photo = "https://bulma.io/images/placeholders/1280x960.png";
         if (restaurant.photos) {
             photo = restaurant.photos[0].photo.url;
@@ -299,7 +332,9 @@ class ResultCard extends React.Component {
                                 <img
                                     src={photo}
                                     alt="Restaurant image"
-                                    onClick={this.clickCard}
+                                    onClick={() =>
+                                        this.props.clickCard(restaurant)
+                                    }
                                 />
                             </a>
                         </figure>
@@ -310,7 +345,9 @@ class ResultCard extends React.Component {
                                 <a>
                                     <p
                                         className="title is-4"
-                                        onClick={this.clickCard}
+                                        onClick={() =>
+                                            this.props.clickCard(restaurant)
+                                        }
                                     >
                                         {restaurant.name}
                                     </p>
@@ -338,11 +375,60 @@ class ResultCard extends React.Component {
     }
 }
 
+class Modal extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    state = {
+        modal_state: "modal"
+    };
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.active !== this.props.active) {
+            if (this.props.active === true) {
+                console.log("Modal active");
+                this.setState({ modal_state: "modal is-active" });
+            } else {
+                this.setState({ modal_state: "modal" });
+            }
+        }
+    }
+
+    render() {
+        let restaurant = this.props.data;
+        return (
+            <div className={this.state.modal_state}>
+                <div className="modal-background"></div>
+                <div className="modal-card">
+                    <header className="modal-card-head">
+                        <p className="modal-card-title">{restaurant.name}</p>
+                        <button
+                            className="delete"
+                            aria-label="close"
+                            onClick={this.props.closeModal}
+                        ></button>
+                    </header>
+                    <section className="modal-card-body">
+                        <img src="https://via.placeholder.com/150"></img>
+                        <h4 className="title is-4">Reviews</h4>
+                    </section>
+                </div>
+                <button
+                    className="modal-close is-large"
+                    aria-label="close"
+                    onClick={this.props.closeModal}
+                ></button>
+            </div>
+        );
+    }
+}
+
 class App extends React.Component {
     state = {};
     render() {
         return (
             <div>
+                {/* <Modal /> */}
                 <NavBar />
                 <Search />
             </div>
