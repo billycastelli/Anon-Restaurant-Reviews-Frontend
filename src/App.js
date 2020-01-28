@@ -228,6 +228,7 @@ class SearchResults extends React.Component {
     clickCard(data) {
         console.log("Open clicked...");
         console.log("DATA", data);
+        document.getElementById("html").classList.add("is-clipped");
         this.setState({ modalData: data });
         this.setState({ displayModal: true });
         console.log(this.state.displayModal);
@@ -235,6 +236,7 @@ class SearchResults extends React.Component {
 
     closeModal() {
         console.log("Close clicked...");
+        document.getElementById("html").classList.remove("is-clipped");
         this.setState({ displayModal: false });
     }
 
@@ -388,10 +390,8 @@ class Modal extends React.Component {
             if (this.props.active === true) {
                 console.log("Modal active");
                 this.setState({ modal_state: "modal is-active" });
-                document.getElementById("html").classList.add("is-clipped");
             } else {
                 this.setState({ modal_state: "modal" });
-                document.getElementById("html").classList.remove("is-clipped");
             }
         }
     }
