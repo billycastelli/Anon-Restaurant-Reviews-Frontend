@@ -227,7 +227,6 @@ class SearchResults extends React.Component {
 
     clickCard(data) {
         console.log("Open clicked...");
-        console.log("DATA", data);
         this.setState({ modalData: data });
         this.setState({ displayModal: true });
         document.getElementById("html").classList.add("is-clipped");
@@ -381,14 +380,35 @@ class Modal extends React.Component {
     constructor(props) {
         super(props);
     }
+
     state = {
-        modal_state: "modal "
+        modal_state: "modal ",
+        modal_data: null
     };
+
+    getReviewsServer(rid) {
+        console.log("Requesting reviews...", rid);
+        let BASE_URL =
+            "https://4jb0iea9tb.execute-api.us-west-2.amazonaws.com/prod/review?";
+        let FULL_URL = BASE_URL + "restaurant_id=" + rid;
+        fetch(FULL_URL, {
+            method: "GET",
+            mode: "cors"
+        })
+            .then(Response => {
+                return Response.json();
+            })
+            .then(jsonData => {
+                console.log(jsonData);
+                this.setState({ modal_data: jsonData });
+            });
+    }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.active !== this.props.active) {
             if (this.props.active === true) {
                 console.log("Modal active");
+                this.getReviewsServer(this.props.data.id);
                 this.setState({ modal_state: "modal is-active" });
             } else {
                 this.setState({ modal_state: "modal" });
@@ -398,11 +418,33 @@ class Modal extends React.Component {
 
     render() {
         let restaurant = this.props.data;
+        let photo = "https://bulma.io/images/placeholders/1280x960.png";
+
+        if (restaurant.photos) {
+            photo = restaurant.photos[0].photo.url;
+        }
+
+        let reviews = null;
+        console.log("DATA: ", this.state.modal_data);
+        if (this.state.modal_data == null) {
+            reviews = <p>No reviews found!</p>;
+        } else if (this.state.modal_data.length === 0) {
+            reviews = <p>No reviews found!</p>;
+        } else {
+            reviews = [];
+            for (var i = 0; i < this.state.modal_data.length; i++) {
+                reviews.push(
+                    <Review
+                        text={this.state.modal_data[i].review_text}
+                        timestamp={this.state.modal_data[i].review_id}
+                        key={i}
+                    />
+                );
+            }
+        }
+        // console.log(JSON.parse(JSON.stringify(restaurant.location)));
         return (
-            <div
-                className={this.state.modal_state}
-                style={{ overflow: "hidden" }}
-            >
+            <div className={this.state.modal_state}>
                 <div className="modal-background"></div>
                 <div className="modal-card">
                     <header className="modal-card-head">
@@ -414,8 +456,29 @@ class Modal extends React.Component {
                         ></button>
                     </header>
                     <section className="modal-card-body">
-                        <img src="https://via.placeholder.com/150"></img>
+                        <div className="columns is-one-third">
+                            <div className="column">
+                                <figure className="is-4by3">
+                                    <img src={photo}></img>
+                                </figure>
+                            </div>
+                            <div className="column is-two-thirds">
+                                <p>
+                                    <b>Cuisines: </b>
+                                    {restaurant.cuisines}
+                                </p>
+                                <p>
+                                    <b>Location: </b>
+                                    {/* {restaurant.location.address} */}
+                                </p>
+                                <p>
+                                    <b>Phone numbers: </b>
+                                    {restaurant.phone_numbers}
+                                </p>
+                            </div>
+                        </div>
                         <h4 className="title is-4">Reviews</h4>
+                        {reviews}
                     </section>
                 </div>
                 <button
@@ -423,6 +486,34 @@ class Modal extends React.Component {
                     aria-label="close"
                     onClick={this.props.closeModal}
                 ></button>
+            </div>
+        );
+    }
+}
+
+class Review extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return (
+            <div className="columns">
+                <figure className="column is-1 image is-32x32">
+                    <img src="NobodysOpinion_icon_grey.png" />
+                </figure>
+
+                <div className="column is-four-fifths">
+                    <p>
+                        <b>Anonymous: </b>
+                        {this.props.text}
+                    </p>
+                    <p className="is-size-7 has-text-grey">
+                        {new Date(parseFloat(this.props.timestamp) * 1000)
+                            .toISOString()
+                            .slice(0, 10)}
+                    </p>
+                </div>
             </div>
         );
     }
