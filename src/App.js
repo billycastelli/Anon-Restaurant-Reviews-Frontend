@@ -456,10 +456,10 @@ class Modal extends React.Component {
                         ></button>
                     </header>
                     <section className="modal-card-body">
-                        <div className="columns is-one-third">
-                            <div className="column">
-                                <figure className="is-4by3">
-                                    <img src={photo}></img>
+                        <div className="columns">
+                            <div className="column is-one-third">
+                                <figure className="image is-4by3">
+                                    <img src={photo} />
                                 </figure>
                             </div>
                             <div className="column is-two-thirds">
@@ -498,12 +498,15 @@ class Review extends React.Component {
 
     render() {
         return (
-            <div className="columns">
-                <figure className="column is-1 image is-32x32">
-                    <img src="NobodysOpinion_icon_grey.png" />
+            <div className="columns is-mobile">
+                <figure className="column is-2-mobile is-1-desktop is-1-tablet image is-32x32">
+                    <img
+                        src="NobodysOpinion_icon_grey.png"
+                        style={{ width: "32", height: "32" }}
+                    />
                 </figure>
 
-                <div className="column is-four-fifths">
+                <div className="column is-10-mobile is-11-desktop is-11-tablet">
                     <p>
                         <b>Anonymous: </b>
                         {this.props.text}
