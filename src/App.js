@@ -230,6 +230,8 @@ class SearchResults extends React.Component {
         this.setState({ modalData: data });
         this.setState({ displayModal: true });
         document.getElementById("html").classList.add("is-clipped");
+        // Figure out how to stop the body scrolling in the background
+        // document.body.classList.add()
         console.log(this.state.displayModal);
     }
 
@@ -379,6 +381,8 @@ class ResultCard extends React.Component {
 class Modal extends React.Component {
     constructor(props) {
         super(props);
+        this.getReviewsServer = this.getReviewsServer.bind(this);
+        this.submitReview = this.submitReview.bind(this);
     }
 
     state = {
@@ -402,6 +406,25 @@ class Modal extends React.Component {
                 console.log(jsonData);
                 this.setState({ modal_data: jsonData });
             });
+    }
+
+    submitReview(rid) {
+        let restaurant_id = rid;
+        let review_text = document.getElementById("input_area").value;
+        let REQUEST_URL =
+            "https://4jb0iea9tb.execute-api.us-west-2.amazonaws.com/prod/review";
+        fetch(REQUEST_URL, {
+            method: "POST",
+            mode: "cors",
+            body: JSON.stringify({
+                restaurant_id: restaurant_id,
+                review_text: review_text
+            })
+        }).then(Response => {
+            console.log(Response.json());
+            this.getReviewsServer(rid);
+        });
+        document.getElementById("input_area").value = "";
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -479,6 +502,10 @@ class Modal extends React.Component {
                         </div>
                         <h4 className="title is-4">Reviews</h4>
                         {reviews}
+                        <InputReview
+                            rid={restaurant.id}
+                            onSubmit={this.submitReview}
+                        />
                     </section>
                 </div>
                 <button
@@ -517,6 +544,33 @@ class Review extends React.Component {
                             .slice(0, 10)}
                     </p>
                 </div>
+            </div>
+        );
+    }
+}
+
+class InputReview extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return (
+            <div class="field">
+                <label class="label">Write a review</label>
+                <div class="control">
+                    <textarea
+                        class="textarea"
+                        placeholder="Enter your review here"
+                        id="input_area"
+                    ></textarea>
+                </div>
+                <button
+                    class="button is-link"
+                    onClick={() => this.props.onSubmit(this.props.rid)}
+                >
+                    Submit
+                </button>
             </div>
         );
     }
