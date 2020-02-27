@@ -1,7 +1,12 @@
 # Review-Site-React
-React based frontend for anonymous restaurant review web app. Connected to AWS lambda based API using the AWS API Gateway.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Proof of concept project using ReactJS and AWS services (lambda, API gateway, and DynamoDB)
+
+React based frontend for an anonymous restaurant review app. AWS lambda functions interface with DynamoDB, and are invoked using the AWS API Gateway. Restaurant data provided by the [OpenTable API](https://platform.opentable.com/)
+## Latest version running on Netlify 
+https://hopeful-snyder-6ef0d5.netlify.com
+
+![](QuerySample.gif)
 
 ## Available Scripts
 
