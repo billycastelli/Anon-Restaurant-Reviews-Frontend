@@ -12,7 +12,7 @@ export class NavBar extends React.Component {
                 aria-label="main navigation"
             >
                 <div className="navbar-brand">
-                    <a className="navbar-item" href="/about.html">
+                    <a className="navbar-item" href="">
                         <img
                             src="NobodysOpinion_icon.png"
                             width="30"
@@ -62,7 +62,7 @@ class HeaderText extends React.Component {
         return (
             <React.Fragment>
                 <h1 className="title is-1" style={{ textAlign: "center" }}>
-                    [Site Title]
+                    Honest Opinion
                 </h1>
                 <p className="subtitle" style={{ textAlign: "center" }}>
                     A truly anonymous way to rate and review restaurants
