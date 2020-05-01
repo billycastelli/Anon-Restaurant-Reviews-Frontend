@@ -65,7 +65,7 @@ class HeaderText extends React.Component {
                     Honest Opinion
                 </h1>
                 <p className="subtitle" style={{ textAlign: "center" }}>
-                    A truly anonymous way to rate and review restaurants
+                    A truly anonymous way to review restaurants
                 </p>
             </React.Fragment>
         );
