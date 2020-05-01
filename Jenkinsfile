@@ -3,12 +3,12 @@ pipeline {
 	stages{
 		stage('Build'){
 			steps{
-				sh yarn
+				sh 'yarn'
 			}
 		}
 		stage('Deploy'){
 			steps{
-				sh yarn start &
+				sh 'yarn start &'
 			}
 		}
 	}
