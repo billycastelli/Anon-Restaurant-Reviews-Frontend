@@ -3,7 +3,9 @@ import logo from "./logo.svg";
 import "./App.css";
 
 export class NavBar extends React.Component {
-    state = {};
+    constructor(props) {
+        super(props);
+    }
     render() {
         return (
             <nav
@@ -40,10 +42,11 @@ export class NavBar extends React.Component {
                     <div className="navbar-menu">
                         <div className="navbar-item field has-addons">
                             <div className="control has-icons-left">
-                                <input
-                                    className="input"
-                                    type="email"
-                                    placeholder="Search for restaurants"
+                                <SearchInput
+                                    handleChange={this.props.handleChange}
+                                    handleSubmit={this.props.handleSubmit}
+                                    input={this.props.input}
+                                    name={this.props.name}
                                 />
                                 <span className="icon is-small is-left">
                                     <i className="fa fa-search"></i>
@@ -53,6 +56,28 @@ export class NavBar extends React.Component {
                     </div>
                 </div>
             </nav>
+        );
+    }
+}
+
+class SearchInput extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        return (
+            <React.Fragment>
+                <form onSubmit={this.props.handleSubmit}>
+                    <input
+                        type="text"
+                        className="input"
+                        placeholder="Search for restaurants"
+                        value={this.props.input}
+                        onChange={this.props.handleChange}
+                        name={this.props.name}
+                    />
+                </form>
+            </React.Fragment>
         );
     }
 }
@@ -75,43 +100,13 @@ class HeaderText extends React.Component {
 class Search extends React.Component {
     constructor() {
         super();
-        this.onSubmit = this.onSubmit.bind(this);
-        this.checkEnter = this.checkEnter.bind(this);
-        this.saveCoords = this.saveCoords.bind(this);
     }
 
     state = {
         userInput: null,
         lat: null,
-        long: null
+        long: null,
     };
-
-    onSubmit() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(this.saveCoords);
-        }
-        let newInput = document.getElementById("searchInput").value;
-        // if userInput is empty, error message
-        if (newInput.length == 0) {
-            return;
-        } else {
-            this.setState({ userInput: newInput });
-            console.log(newInput);
-        }
-    }
-
-    saveCoords(position) {
-        this.setState({
-            lat: position.coords.latitude,
-            lon: position.coords.longitude
-        });
-    }
-
-    checkEnter(e) {
-        if (e.key === "Enter") {
-            this.onSubmit();
-        }
-    }
 
     render() {
         let search = null;
@@ -138,18 +133,21 @@ class Search extends React.Component {
                                 <HeaderText />
                                 <div className="field has-addons has-addons-centered">
                                     <div className="control">
-                                        <input
-                                            className="input"
-                                            type="text"
-                                            id="searchInput"
-                                            placeholder="Search for restaurants"
-                                            onKeyPress={this.checkEnter}
+                                        <SearchInput
+                                            handleChange={
+                                                this.props.handleChange
+                                            }
+                                            handleSubmit={
+                                                this.props.handleSubmit
+                                            }
+                                            input={this.props.input}
+                                            name={this.props.name}
                                         />
                                     </div>
                                     <div className="control">
                                         <a
                                             className="button is-info"
-                                            onClick={this.onSubmit}
+                                            onClick={this.props.handleSubmit}
                                         >
                                             Search
                                         </a>
@@ -158,11 +156,7 @@ class Search extends React.Component {
                                 <div
                                     className="container"
                                     style={{ textAlign: "center" }}
-                                >
-                                    <button className="button">
-                                        Show local restaurants
-                                    </button>
-                                </div>
+                                ></div>
                             </div>
                         </div>
                     </div>
@@ -180,14 +174,13 @@ class SearchResults extends React.Component {
         this.getResultsServer = this.getResultsServer.bind(this);
         this.clickCard = this.clickCard.bind(this);
         this.closeModal = this.closeModal.bind(this);
-
         this.getResultsServer(this.props.query, this.props.lat, this.props.lon);
     }
 
     state = {
         allResults: {},
         displayModal: false,
-        modalData: {}
+        modalData: {},
     };
 
     getResultsServer(query, lat, lon) {
@@ -204,12 +197,12 @@ class SearchResults extends React.Component {
             lon.toString();
         fetch(FULL_URL, {
             method: "GET",
-            mode: "cors"
+            mode: "cors",
         })
-            .then(Response => {
+            .then((Response) => {
                 return Response.json();
             })
-            .then(jsonData => {
+            .then((jsonData) => {
                 console.log(jsonData);
                 this.setState({ allResults: jsonData });
             });
@@ -242,6 +235,7 @@ class SearchResults extends React.Component {
     }
 
     render() {
+        let results = <React.Fragment />;
         let rowsDisplay = null;
         if (this.state.allResults.restaurants) {
             let restaurants = this.state.allResults.restaurants;
@@ -275,6 +269,7 @@ class SearchResults extends React.Component {
             }
             rowsDisplay = <React.Fragment>{rows}</React.Fragment>;
         }
+
         return (
             <section className="section">
                 <Modal
@@ -387,7 +382,7 @@ class Modal extends React.Component {
 
     state = {
         modal_state: "modal ",
-        modal_data: null
+        modal_data: null,
     };
 
     getReviewsServer(rid) {
@@ -397,12 +392,12 @@ class Modal extends React.Component {
         let FULL_URL = BASE_URL + "restaurant_id=" + rid;
         fetch(FULL_URL, {
             method: "GET",
-            mode: "cors"
+            mode: "cors",
         })
-            .then(Response => {
+            .then((Response) => {
                 return Response.json();
             })
-            .then(jsonData => {
+            .then((jsonData) => {
                 console.log(jsonData);
                 this.setState({ modal_data: jsonData });
             });
@@ -418,9 +413,9 @@ class Modal extends React.Component {
             mode: "cors",
             body: JSON.stringify({
                 restaurant_id: restaurant_id,
-                review_text: review_text
-            })
-        }).then(Response => {
+                review_text: review_text,
+            }),
+        }).then((Response) => {
             console.log(Response.json());
             this.getReviewsServer(rid);
         });
@@ -442,9 +437,13 @@ class Modal extends React.Component {
     render() {
         let restaurant = this.props.data;
         let photo = "https://bulma.io/images/placeholders/1280x960.png";
+        let address = "";
 
         if (restaurant.photos) {
             photo = restaurant.photos[0].photo.url;
+        }
+        if (restaurant.location) {
+            address = restaurant.location.address;
         }
 
         let reviews = null;
@@ -465,7 +464,6 @@ class Modal extends React.Component {
                 );
             }
         }
-        // console.log(JSON.parse(JSON.stringify(restaurant.location)));
         return (
             <div className={this.state.modal_state}>
                 <div className="modal-background"></div>
@@ -492,7 +490,7 @@ class Modal extends React.Component {
                                 </p>
                                 <p>
                                     <b>Location: </b>
-                                    {/* {restaurant.location.address} */}
+                                    {address}
                                 </p>
                                 <p>
                                     <b>Phone numbers: </b>
@@ -556,17 +554,18 @@ class InputReview extends React.Component {
 
     render() {
         return (
-            <div class="field">
-                <label class="label">Write a review</label>
-                <div class="control">
+            <div className="field">
+                <label className="label">Write a review</label>
+                <div className="control">
                     <textarea
-                        class="textarea"
+                        className="textarea"
                         placeholder="Enter your review here"
                         id="input_area"
                     ></textarea>
                 </div>
                 <button
-                    class="button is-link"
+                    className="button is-link"
+                    style={{ marginTop: "1em" }}
                     onClick={() => this.props.onSubmit(this.props.rid)}
                 >
                     Submit
@@ -576,13 +575,110 @@ class InputReview extends React.Component {
     }
 }
 
-class App extends React.Component {
-    state = {};
+class LocalResultsButton extends React.Component {
+    constructor(props) {
+        super(props);
+    }
     render() {
         return (
+            <div className="has-text-centered" style={{ marginTop: "-3em" }}>
+                <button
+                    className="button"
+                    onClick={this.props.handleLocalClick}
+                >
+                    Show local restaurants
+                </button>
+            </div>
+        );
+    }
+}
+
+class App extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            navInput: "",
+            mainInput: "",
+            lat: null,
+            lon: null,
+            query: null,
+        };
+
+        this.handleChange = this.handleChange.bind(this);
+        this.handleNavSubmit = this.handleNavSubmit.bind(this);
+        this.handleMainSubmit = this.handleMainSubmit.bind(this);
+        this.handleLocalClick = this.handleLocalClick.bind(this);
+        this.saveCoords = this.saveCoords.bind(this);
+    }
+
+    handleChange(event) {
+        console.log("New input value: " + event.target.value);
+        console.log("event.target.name: " + [event.target.name]);
+        this.setState({
+            [event.target.name]: event.target.value,
+        });
+    }
+
+    handleNavSubmit(event) {
+        console.log("In submit: " + event.target);
+        event.preventDefault();
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(this.saveCoords);
+        }
+        this.setState({ query: this.state.navInput });
+    }
+
+    handleMainSubmit(event) {
+        console.log("In submit: " + event.target);
+        event.preventDefault();
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(this.saveCoords);
+        }
+        this.setState({ query: this.state.mainInput });
+    }
+
+    handleLocalClick() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(this.saveCoords);
+        }
+        this.setState({ query: "lunch" });
+    }
+
+    saveCoords(position) {
+        this.setState({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+        });
+    }
+
+    render() {
+        let results = <React.Fragment />;
+        if (this.state.query && this.state.lat && this.state.lon) {
+            results = (
+                <SearchResults
+                    query={this.state.query}
+                    lat={this.state.lat}
+                    lon={this.state.lon}
+                />
+            );
+        }
+
+        return (
             <div>
-                <NavBar />
-                <Search />
+                <NavBar
+                    handleChange={this.handleChange}
+                    handleSubmit={this.handleNavSubmit}
+                    input={this.state.input}
+                    name="navInput"
+                />
+                <Search
+                    handleChange={this.handleChange}
+                    handleSubmit={this.handleMainSubmit}
+                    input={this.state.input}
+                    name="mainInput"
+                />
+                <LocalResultsButton handleLocalClick={this.handleLocalClick} />
+                {results}
             </div>
         );
     }
