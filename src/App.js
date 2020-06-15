@@ -449,9 +449,9 @@ class Modal extends React.Component {
         let reviews = null;
         console.log("DATA: ", this.state.modal_data);
         if (this.state.modal_data == null) {
-            reviews = <p>No reviews found!</p>;
+            reviews = <p style={{ marginBottom: "2em" }}>No reviews found!</p>;
         } else if (this.state.modal_data.length === 0) {
-            reviews = <p>No reviews found!</p>;
+            reviews = <p style={{ marginBottom: "2em" }}>No reviews found!</p>;
         } else {
             reviews = [];
             for (var i = 0; i < this.state.modal_data.length; i++) {
