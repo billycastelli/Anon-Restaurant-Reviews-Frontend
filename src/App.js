@@ -87,10 +87,10 @@ class HeaderText extends React.Component {
         return (
             <React.Fragment>
                 <h1 className="title is-1" style={{ textAlign: "center" }}>
-                    Honest Opinion
+                    Honest Opinions
                 </h1>
                 <p className="subtitle" style={{ textAlign: "center" }}>
-                    A truly anonymous way to rate and review restaurants
+                    A truly anonymous way to review local restaurants
                 </p>
             </React.Fragment>
         );
